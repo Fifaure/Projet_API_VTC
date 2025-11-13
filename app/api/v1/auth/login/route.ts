@@ -58,7 +58,7 @@ export async function POST(request: Request) {
       name: 'auth_token',
       value: token,
       httpOnly: true,
-      maxAge: 60 * 60 * 2, // 2 heures
+      maxAge: 60 * 5, // 5 minutes
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
       path: '/'
