@@ -50,29 +50,29 @@ export default function CreateVehicleForm({ models, sellers }: CreateVehicleForm
       modelId: data.modelId
     }
 
-    // Ajouter sellerId seulement s'il est fourni
+    // Ajouter sellerId (l'API gère null/undefined/'' correctement)
     if (data.sellerId) {
       body.sellerId = data.sellerId
     } else {
-      body.sellerId = null
+      body.sellerId = ''
     }
 
-    // Ajouter mileageKm seulement s'il est fourni
+    // Ajouter mileageKm seulement s'il est fourni (pas vide)
     if (data.mileageKm) {
       body.mileageKm = data.mileageKm
     }
 
-    // Ajouter priceEUR seulement s'il est fourni
+    // Ajouter priceEUR seulement s'il est fourni (pas vide)
     if (data.priceEUR) {
       body.priceEUR = data.priceEUR
     }
 
-    // Ajouter color seulement s'il est fourni
+    // Ajouter color seulement s'il est fourni (pas vide)
     if (data.color) {
       body.color = data.color
     }
 
-    // Ajouter notes seulement s'il est fourni
+    // Ajouter notes seulement s'il est fourni (pas vide)
     if (data.notes) {
       body.notes = data.notes
     }
@@ -89,7 +89,8 @@ export default function CreateVehicleForm({ models, sellers }: CreateVehicleForm
       const result = await response.json()
 
       if (!response.ok) {
-        setError(result.error || 'Une erreur est survenue lors de la création du véhicule')
+        console.error('[CreateVehicleForm] API Error:', result)
+        setError(result.error || `Erreur ${response.status}: Une erreur est survenue lors de la création du véhicule`)
         setIsSubmitting(false)
         return
       }

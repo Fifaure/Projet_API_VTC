@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { getAuthSecret } from '@/app/lib/auth'
 import { prisma } from '@/app/lib/prisma'
 import Link from 'next/link'
-import CreateVehicleForm from '../CreateVehicleForm'
+import EditVehicleForm from '../../EditVehicleForm'
 
 async function validateAuthorization(): Promise<{ email: string; name?: string | null } | null> {
   const cookieStore = await cookies()
@@ -22,20 +22,33 @@ async function validateAuthorization(): Promise<{ email: string; name?: string |
     }
     return { email: payload.email, name: payload.name }
   } catch (error) {
-    console.error('[create.validateAuthorization]', error)
+    console.error('[edit.validateAuthorization]', error)
     return null
   }
 }
 
-export default async function CreateVehiclePage() {
+export default async function EditVehiclePage({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
   const session = await validateAuthorization()
 
   if (!session) {
     redirect('/')
   }
 
-  // Récupérer les modèles et les vendeurs
-  const [models, sellers] = await Promise.all([
+  const { id } = await params
+
+  // Récupérer le véhicule et les données nécessaires
+  const [vehicle, models, sellers] = await Promise.all([
+    prisma.vehicle.findUnique({
+      where: { id },
+      include: {
+        model: true,
+        seller: true
+      }
+    }),
     prisma.model.findMany({
       orderBy: [
         { brand: 'asc' },
@@ -47,14 +60,24 @@ export default async function CreateVehiclePage() {
     })
   ])
 
+  if (!vehicle) {
+    redirect('/CRUD/vehicles/list')
+  }
+
+  // Convertir le Decimal en string pour la sérialisation
+  const serializedVehicle = {
+    ...vehicle,
+    priceEUR: vehicle.priceEUR ? vehicle.priceEUR.toString() : null
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 p-6">
       <section className="w-full max-w-2xl rounded-lg bg-white p-8 shadow">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-semibold text-slate-800">Créer un véhicule</h1>
-              <p className="text-sm text-slate-600 mt-1">Remplissez le formulaire pour ajouter un nouveau véhicule</p>
+              <h1 className="text-2xl font-semibold text-slate-800">Modifier un véhicule</h1>
+              <p className="text-sm text-slate-600 mt-1">Modifiez les informations du véhicule</p>
             </div>
             <Link
               href="/home?mode=vehicles"
@@ -67,7 +90,7 @@ export default async function CreateVehiclePage() {
             </Link>
           </div>
         </div>
-        <CreateVehicleForm models={models} sellers={sellers} />
+        <EditVehicleForm vehicle={serializedVehicle} models={models} sellers={sellers} />
       </section>
     </main>
   )

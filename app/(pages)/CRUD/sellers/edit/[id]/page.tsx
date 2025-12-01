@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { getAuthSecret } from '@/app/lib/auth'
 import { prisma } from '@/app/lib/prisma'
 import Link from 'next/link'
-import CreateVehicleForm from '../CreateVehicleForm'
+import EditSellerForm from '../../EditSellerForm'
 
 async function validateAuthorization(): Promise<{ email: string; name?: string | null } | null> {
   const cookieStore = await cookies()
@@ -22,30 +22,31 @@ async function validateAuthorization(): Promise<{ email: string; name?: string |
     }
     return { email: payload.email, name: payload.name }
   } catch (error) {
-    console.error('[create.validateAuthorization]', error)
+    console.error('[edit.validateAuthorization]', error)
     return null
   }
 }
 
-export default async function CreateVehiclePage() {
+export default async function EditSellerPage({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
   const session = await validateAuthorization()
 
   if (!session) {
     redirect('/')
   }
 
-  // Récupérer les modèles et les vendeurs
-  const [models, sellers] = await Promise.all([
-    prisma.model.findMany({
-      orderBy: [
-        { brand: 'asc' },
-        { name: 'asc' }
-      ]
-    }),
-    prisma.seller.findMany({
-      orderBy: { name: 'asc' }
-    })
-  ])
+  const { id } = await params
+
+  const seller = await prisma.seller.findUnique({
+    where: { id }
+  })
+
+  if (!seller) {
+    redirect('/CRUD/sellers/list')
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 p-6">
@@ -53,11 +54,11 @@ export default async function CreateVehiclePage() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-semibold text-slate-800">Créer un véhicule</h1>
-              <p className="text-sm text-slate-600 mt-1">Remplissez le formulaire pour ajouter un nouveau véhicule</p>
+              <h1 className="text-2xl font-semibold text-slate-800">Modifier un vendeur</h1>
+              <p className="text-sm text-slate-600 mt-1">Modifiez les informations du vendeur</p>
             </div>
             <Link
-              href="/home?mode=vehicles"
+              href="/home?mode=sellers"
               className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,7 +68,7 @@ export default async function CreateVehiclePage() {
             </Link>
           </div>
         </div>
-        <CreateVehicleForm models={models} sellers={sellers} />
+        <EditSellerForm seller={seller} />
       </section>
     </main>
   )

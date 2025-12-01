@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import { getAuthSecret } from '@/app/lib/auth'
 import { prisma } from '@/app/lib/prisma'
 import Link from 'next/link'
-import CreateVehicleForm from '../CreateVehicleForm'
+import VehiclesList from '../VehiclesList'
 
 async function validateAuthorization(): Promise<{ email: string; name?: string | null } | null> {
   const cookieStore = await cookies()
@@ -22,39 +22,48 @@ async function validateAuthorization(): Promise<{ email: string; name?: string |
     }
     return { email: payload.email, name: payload.name }
   } catch (error) {
-    console.error('[create.validateAuthorization]', error)
+    console.error('[list.validateAuthorization]', error)
     return null
   }
 }
 
-export default async function CreateVehiclePage() {
+async function getVehicles() {
+  try {
+    const vehicles = await prisma.vehicle.findMany({
+      include: {
+        model: true,
+        seller: true
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    return vehicles.map(vehicle => ({
+      ...vehicle,
+      priceEUR: vehicle.priceEUR ? vehicle.priceEUR.toString() : null
+    }))
+  } catch (error) {
+    console.error('[getVehicles]', error)
+    return []
+  }
+}
+
+export default async function VehiclesListPage() {
   const session = await validateAuthorization()
 
   if (!session) {
     redirect('/')
   }
 
-  // Récupérer les modèles et les vendeurs
-  const [models, sellers] = await Promise.all([
-    prisma.model.findMany({
-      orderBy: [
-        { brand: 'asc' },
-        { name: 'asc' }
-      ]
-    }),
-    prisma.seller.findMany({
-      orderBy: { name: 'asc' }
-    })
-  ])
+  const vehicles = await getVehicles()
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 p-6">
-      <section className="w-full max-w-2xl rounded-lg bg-white p-8 shadow">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+      <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-semibold text-slate-800">Créer un véhicule</h1>
-              <p className="text-sm text-slate-600 mt-1">Remplissez le formulaire pour ajouter un nouveau véhicule</p>
+              <h1 className="text-3xl font-bold text-slate-800">Liste des véhicules</h1>
+              <p className="text-slate-600 mt-1">{vehicles.length} véhicule{vehicles.length > 1 ? 's' : ''} trouvé{vehicles.length > 1 ? 's' : ''}</p>
             </div>
             <Link
               href="/home?mode=vehicles"
@@ -67,8 +76,8 @@ export default async function CreateVehiclePage() {
             </Link>
           </div>
         </div>
-        <CreateVehicleForm models={models} sellers={sellers} />
-      </section>
+        <VehiclesList vehicles={vehicles} />
+      </div>
     </main>
   )
 }

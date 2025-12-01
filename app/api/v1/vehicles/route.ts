@@ -150,15 +150,6 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('[vehicles.POST]', error)
 
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2003') {
-        return NextResponse.json(
-          { error: 'modelId ou sellerId invalide' },
-          { status: 400 }
-        )
-      }
-    }
-
     return NextResponse.json(
       { error: 'Impossible de créer le véhicule' },
       { status: 500 }
