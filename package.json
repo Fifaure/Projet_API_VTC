@@ -12,12 +12,12 @@
     "prisma:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.0",
+    "@prisma/client": "^7.0.1",
     "@prisma/extension-accelerate": "^2.0.2",
     "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.2",
     "next": "16.0.2",
-    "prisma": "^6.19.0",
+    "prisma": "^7.0.1",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
