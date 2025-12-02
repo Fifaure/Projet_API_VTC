@@ -91,13 +91,13 @@ export default function CreateVehicleForm({ models, sellers }: CreateVehicleForm
 
       if (!response.ok) {
         console.error('[CreateVehicleForm] API Error:', result)
-        
+
         if (response.status === 401) {
           setError('Session expirée. Veuillez vous reconnecter.')
           setTimeout(() => window.location.href = '/', 2000)
           return
         }
-        
+
         setError(result.error || `Erreur ${response.status}: Une erreur est survenue lors de la création du véhicule`)
         setIsSubmitting(false)
         return
@@ -105,7 +105,7 @@ export default function CreateVehicleForm({ models, sellers }: CreateVehicleForm
 
       setSuccess(true)
       setTimeout(() => {
-        router.push('/home?mode=vehicles')
+        router.push('/?mode=vehicles')
         router.refresh()
       }, 1500)
     } catch (err) {
@@ -237,7 +237,7 @@ export default function CreateVehicleForm({ models, sellers }: CreateVehicleForm
       <div className="flex gap-4 pt-4">
         <button
           type="button"
-          onClick={() => router.push('/home?mode=vehicles')}
+          onClick={() => router.push('/?mode=vehicles')}
           className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
         >
           Annuler

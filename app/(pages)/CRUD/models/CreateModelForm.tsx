@@ -53,13 +53,13 @@ export default function CreateModelForm() {
 
       if (!response.ok) {
         console.error('[CreateModelForm] API Error:', result)
-        
+
         if (response.status === 401) {
           setError('Session expirée. Veuillez vous reconnecter.')
           setTimeout(() => window.location.href = '/', 2000)
           return
         }
-        
+
         setError(result.error || `Erreur ${response.status}: Une erreur est survenue lors de la création du modèle`)
         setIsSubmitting(false)
         return
@@ -67,7 +67,7 @@ export default function CreateModelForm() {
 
       setSuccess(true)
       setTimeout(() => {
-        router.push('/home?mode=models')
+        router.push('/?mode=models')
         router.refresh()
       }, 1500)
     } catch (err) {
@@ -161,7 +161,7 @@ export default function CreateModelForm() {
       <div className="flex gap-4 pt-4">
         <button
           type="button"
-          onClick={() => router.push('/home?mode=models')}
+          onClick={() => router.push('/?mode=models')}
           className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
         >
           Annuler

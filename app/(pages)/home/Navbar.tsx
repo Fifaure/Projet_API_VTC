@@ -50,7 +50,7 @@ export default function Navbar() {
             return (
               <Link
                 key={mode.id}
-                href={`/home?mode=${mode.id}`}
+                href={`/?mode=${mode.id}`}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
                   isActive
                     ? 'bg-blue-600 text-white shadow-md'

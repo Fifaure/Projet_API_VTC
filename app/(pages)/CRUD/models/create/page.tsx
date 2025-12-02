@@ -20,7 +20,7 @@ export default async function CreateModelPage() {
               <p className="text-sm text-slate-600 mt-1">Remplissez le formulaire pour ajouter un nouveau modèle</p>
             </div>
             <Link
-              href="/home?mode=models"
+              href="/?mode=models"
               className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

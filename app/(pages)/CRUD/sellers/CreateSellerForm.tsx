@@ -67,7 +67,7 @@ export default function CreateSellerForm() {
           setTimeout(() => window.location.href = '/', 2000)
           return
         }
-        
+
         setError(result.error || 'Une erreur est survenue lors de la création du vendeur')
         setIsSubmitting(false)
         return
@@ -75,7 +75,7 @@ export default function CreateSellerForm() {
 
       setSuccess(true)
       setTimeout(() => {
-        router.push('/home?mode=sellers')
+        router.push('/?mode=sellers')
         router.refresh()
       }, 1500)
     } catch (err) {
@@ -162,7 +162,7 @@ export default function CreateSellerForm() {
       <div className="flex gap-4 pt-4">
         <button
           type="button"
-          onClick={() => router.push('/home?mode=sellers')}
+          onClick={() => router.push('/?mode=sellers')}
           className="flex-1 px-4 py-2 border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-50 transition-colors"
         >
           Annuler

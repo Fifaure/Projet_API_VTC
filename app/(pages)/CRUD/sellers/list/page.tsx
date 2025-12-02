@@ -18,10 +18,7 @@ async function getSellers() {
 
 export default async function SellersListPage() {
   const session = await getServerSession()
-
-  if (!session) {
-    redirect('/')
-  }
+  const isAuthenticated = !!session
 
   const sellers = await getSellers()
 
@@ -35,7 +32,7 @@ export default async function SellersListPage() {
               <p className="text-slate-600 mt-1">{sellers.length} vendeur{sellers.length > 1 ? 's' : ''} trouvé{sellers.length > 1 ? 's' : ''}</p>
             </div>
             <Link
-              href="/home?mode=sellers"
+              href="/"
               className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,7 +42,7 @@ export default async function SellersListPage() {
             </Link>
           </div>
         </div>
-        <SellersList sellers={sellers} />
+        <SellersList sellers={sellers} isAuthenticated={isAuthenticated} />
       </div>
     </main>
   )

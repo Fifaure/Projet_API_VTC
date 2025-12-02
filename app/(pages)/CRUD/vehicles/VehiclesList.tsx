@@ -31,9 +31,10 @@ type Vehicle = {
 
 type VehiclesListProps = {
   vehicles: Vehicle[]
+  isAuthenticated: boolean
 }
 
-export default function VehiclesList({ vehicles }: VehiclesListProps) {
+export default function VehiclesList({ vehicles, isAuthenticated }: VehiclesListProps) {
   const router = useRouter()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -56,14 +57,14 @@ export default function VehiclesList({ vehicles }: VehiclesListProps) {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
-        
+
         // Si toujours 401 après refresh, rediriger vers login
         if (response.status === 401) {
           alert('Session expirée. Veuillez vous reconnecter.')
           window.location.href = '/'
           return
         }
-        
+
         alert(`Erreur lors de la suppression : ${error.error || 'Erreur inconnue'}`)
         return
       }
@@ -82,12 +83,14 @@ export default function VehiclesList({ vehicles }: VehiclesListProps) {
     return (
       <div className="bg-white rounded-xl shadow-md p-8 border border-slate-200 text-center">
         <p className="text-slate-600 mb-4">Aucun véhicule trouvé.</p>
-        <Link
-          href="/CRUD/vehicles/create"
-          className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Créer un véhicule
-        </Link>
+        {isAuthenticated && (
+          <Link
+            href="/CRUD/vehicles/create"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Créer un véhicule
+          </Link>
+        )}
       </div>
     )
   }
@@ -153,24 +156,28 @@ export default function VehiclesList({ vehicles }: VehiclesListProps) {
                   {vehicle.color || '-'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/CRUD/vehicles/edit/${vehicle.id}`}
-                      className="text-yellow-600 hover:text-yellow-900"
-                    >
-                      Modifier
-                    </Link>
-                    <span className="text-slate-300">|</span>
-                    <button
-                      onClick={() => handleDelete(vehicle.id, vehicle.model.name, vehicle.model.brand)}
-                      disabled={deletingId === vehicle.id}
-                      className={`text-red-600 hover:text-red-900 ${
-                        deletingId === vehicle.id ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      {deletingId === vehicle.id ? 'Suppression...' : 'Supprimer'}
-                    </button>
-                  </div>
+                  {isAuthenticated ? (
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/CRUD/vehicles/edit/${vehicle.id}`}
+                        className="text-yellow-600 hover:text-yellow-900"
+                      >
+                        Modifier
+                      </Link>
+                      <span className="text-slate-300">|</span>
+                      <button
+                        onClick={() => handleDelete(vehicle.id, vehicle.model.name, vehicle.model.brand)}
+                        disabled={deletingId === vehicle.id}
+                        className={`text-red-600 hover:text-red-900 ${
+                          deletingId === vehicle.id ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {deletingId === vehicle.id ? 'Suppression...' : 'Supprimer'}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 italic">Lecture seule</span>
+                  )}
                 </td>
               </tr>
             ))}

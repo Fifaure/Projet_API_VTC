@@ -7,6 +7,7 @@ type Mode = 'vehicles' | 'models' | 'sellers'
 
 type CRUDActionsProps = {
   mode: Mode
+  isAuthenticated: boolean
 }
 
 const crudConfig: Record<Mode, {
@@ -116,43 +117,48 @@ const crudConfig: Record<Mode, {
   }
 }
 
-export default function CRUDActions({ mode }: CRUDActionsProps) {
+export default function CRUDActions({ mode, isAuthenticated }: CRUDActionsProps) {
   const config = crudConfig[mode]
 
   return (
     <div>
       <h2 className="text-2xl font-semibold text-slate-800 mb-6">{config.title}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {config.actions.map((action, index) => (
-          <Link
-            key={index}
-            href={action.href}
-            className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-slate-200 hover:border-slate-300"
-          >
-            <div className="flex items-start gap-4">
-              <div className={`${action.bgColor} p-3 rounded-lg group-hover:scale-110 transition-transform duration-300`}>
-                <div className={action.textColor}>
-                  {action.icon}
+        {config.actions.map((action, index) => {
+          const isCreateAction = action.href.includes('create')
+          const href = (!isAuthenticated && isCreateAction) ? '/login' : action.href
+
+          return (
+            <Link
+              key={index}
+              href={href}
+              className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-slate-200 hover:border-slate-300"
+            >
+              <div className="flex items-start gap-4">
+                <div className={`${action.bgColor} p-3 rounded-lg group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={action.textColor}>
+                    {action.icon}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
+                    {action.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 mb-4">
+                    {action.description}
+                  </p>
+                  <div className="flex items-center text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">
+                    Accéder
+                    <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
               </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                  {action.title}
-                </h3>
-                <p className="text-sm text-slate-600 mb-4">
-                  {action.description}
-                </p>
-                <div className="flex items-center text-sm font-medium text-slate-500 group-hover:text-blue-600 transition-colors">
-                  Accéder
-                  <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <div className={`absolute bottom-0 left-0 right-0 h-1 ${action.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`} />
-          </Link>
-        ))}
+              <div className={`absolute bottom-0 left-0 right-0 h-1 ${action.color} transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300`} />
+            </Link>
+          )
+        })}
       </div>
     </div>
   )

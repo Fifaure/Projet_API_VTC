@@ -17,9 +17,10 @@ type Seller = {
 
 type SellersListProps = {
   sellers: Seller[]
+  isAuthenticated: boolean
 }
 
-export default function SellersList({ sellers }: SellersListProps) {
+export default function SellersList({ sellers, isAuthenticated }: SellersListProps) {
   const router = useRouter()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -41,13 +42,13 @@ export default function SellersList({ sellers }: SellersListProps) {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
-        
+
         if (response.status === 401) {
           alert('Session expirée. Veuillez vous reconnecter.')
           window.location.href = '/'
           return
         }
-        
+
         alert(`Erreur lors de la suppression : ${error.error || 'Erreur inconnue'}`)
         return
       }
@@ -66,12 +67,14 @@ export default function SellersList({ sellers }: SellersListProps) {
     return (
       <div className="bg-white rounded-xl shadow-md p-8 border border-slate-200 text-center">
         <p className="text-slate-600 mb-4">Aucun vendeur trouvé.</p>
-        <Link
-          href="/CRUD/sellers/create"
-          className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Créer un vendeur
-        </Link>
+        {isAuthenticated && (
+          <Link
+            href="/CRUD/sellers/create"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Créer un vendeur
+          </Link>
+        )}
       </div>
     )
   }
@@ -126,24 +129,28 @@ export default function SellersList({ sellers }: SellersListProps) {
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/CRUD/sellers/edit/${seller.id}`}
-                      className="text-yellow-600 hover:text-yellow-900"
-                    >
-                      Modifier
-                    </Link>
-                    <span className="text-slate-300">|</span>
-                    <button
-                      onClick={() => handleDelete(seller.id, seller.name)}
-                      disabled={deletingId === seller.id}
-                      className={`text-red-600 hover:text-red-900 ${
-                        deletingId === seller.id ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      {deletingId === seller.id ? 'Suppression...' : 'Supprimer'}
-                    </button>
-                  </div>
+                  {isAuthenticated ? (
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/CRUD/sellers/edit/${seller.id}`}
+                        className="text-yellow-600 hover:text-yellow-900"
+                      >
+                        Modifier
+                      </Link>
+                      <span className="text-slate-300">|</span>
+                      <button
+                        onClick={() => handleDelete(seller.id, seller.name)}
+                        disabled={deletingId === seller.id}
+                        className={`text-red-600 hover:text-red-900 ${
+                          deletingId === seller.id ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {deletingId === seller.id ? 'Suppression...' : 'Supprimer'}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 italic">Lecture seule</span>
+                  )}
                 </td>
               </tr>
             ))}

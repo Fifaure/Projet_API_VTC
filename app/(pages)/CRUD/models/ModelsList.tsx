@@ -17,9 +17,10 @@ type Model = {
 
 type ModelsListProps = {
   models: Model[]
+  isAuthenticated: boolean
 }
 
-export default function ModelsList({ models }: ModelsListProps) {
+export default function ModelsList({ models, isAuthenticated }: ModelsListProps) {
   const router = useRouter()
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
@@ -41,13 +42,13 @@ export default function ModelsList({ models }: ModelsListProps) {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
-        
+
         if (response.status === 401) {
           alert('Session expirée. Veuillez vous reconnecter.')
           window.location.href = '/'
           return
         }
-        
+
         alert(`Erreur lors de la suppression : ${error.error || 'Erreur inconnue'}`)
         return
       }
@@ -66,12 +67,14 @@ export default function ModelsList({ models }: ModelsListProps) {
     return (
       <div className="bg-white rounded-xl shadow-md p-8 border border-slate-200 text-center">
         <p className="text-slate-600 mb-4">Aucun modèle trouvé.</p>
-        <Link
-          href="/CRUD/models/create"
-          className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Créer un modèle
-        </Link>
+        {isAuthenticated && (
+          <Link
+            href="/CRUD/models/create"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Créer un modèle
+          </Link>
+        )}
       </div>
     )
   }
@@ -113,24 +116,28 @@ export default function ModelsList({ models }: ModelsListProps) {
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/CRUD/models/edit/${model.id}`}
-                      className="text-yellow-600 hover:text-yellow-900"
-                    >
-                      Modifier
-                    </Link>
-                    <span className="text-slate-300">|</span>
-                    <button
-                      onClick={() => handleDelete(model.id, model.name, model.brand)}
-                      disabled={deletingId === model.id}
-                      className={`text-red-600 hover:text-red-900 ${
-                        deletingId === model.id ? 'opacity-50 cursor-not-allowed' : ''
-                      }`}
-                    >
-                      {deletingId === model.id ? 'Suppression...' : 'Supprimer'}
-                    </button>
-                  </div>
+                  {isAuthenticated ? (
+                    <div className="flex gap-2">
+                      <Link
+                        href={`/CRUD/models/edit/${model.id}`}
+                        className="text-yellow-600 hover:text-yellow-900"
+                      >
+                        Modifier
+                      </Link>
+                      <span className="text-slate-300">|</span>
+                      <button
+                        onClick={() => handleDelete(model.id, model.name, model.brand)}
+                        disabled={deletingId === model.id}
+                        className={`text-red-600 hover:text-red-900 ${
+                          deletingId === model.id ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        {deletingId === model.id ? 'Suppression...' : 'Supprimer'}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 italic">Lecture seule</span>
+                  )}
                 </td>
               </tr>
             ))}
