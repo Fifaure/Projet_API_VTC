@@ -6,8 +6,7 @@ const RATE_LIMIT_MAX = 20; // 20 requests per window
 
 const ipRequests = new Map<string, { count: number; startTime: number }>();
 
-export function middleware(request: NextRequest) {
-  // Only apply to API routes
+export function proxy(request: NextRequest) {
   if (!request.nextUrl.pathname.startsWith('/api')) {
     return NextResponse.next();
   }
@@ -17,7 +16,6 @@ export function middleware(request: NextRequest) {
 
   const requestData = ipRequests.get(ip) || { count: 0, startTime: now };
 
-  // Reset window if time passed
   if (now - requestData.startTime > RATE_LIMIT_WINDOW) {
     requestData.count = 0;
     requestData.startTime = now;

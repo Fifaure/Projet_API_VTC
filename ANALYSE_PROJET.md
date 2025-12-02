@@ -76,7 +76,7 @@ Ce document compare l'état actuel du projet **API VTC** avec les exigences du c
 | -------------------------------- | ---------- | ------------------------------------------------------------------- |
 | **Routes protégées par JWT**     | 🔴 Haute   | ✅ **FAIT** - API v2 avec middleware JWT                            |
 | **Route `/api/v1/profil`**       | 🔴 Haute   | ❌ À implémenter                                                    |
-| **Système de rôles**             | 🟠 Moyenne | ❌ Pas de distinction user/admin dans le modèle User                |
+| **Système de rôles**             | 🟠 Moyenne | ✅ **FAIT**                                                         |
 | **Route `/api/v1/auth/refresh`** | 🟠 Moyenne | ✅ **FAIT** - Le champ `refreshToken` existe mais n'est pas utilisé |
 | **Google OAuth2**                | 🟢 Bonus   | ❌ Non implémenté                                                   |
 
