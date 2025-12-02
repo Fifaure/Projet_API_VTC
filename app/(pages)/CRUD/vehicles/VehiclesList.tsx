@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { fetchWithAuth } from '@/app/lib/fetchWithAuth'
 
 type Vehicle = {
   id: string
@@ -48,12 +49,21 @@ export default function VehiclesList({ vehicles }: VehiclesListProps) {
     setDeletingId(id)
 
     try {
-      const response = await fetch(`/api/v1/vehicles/${id}`, {
+      // Utilise fetchWithAuth qui rafraîchit automatiquement le token si expiré
+      const response = await fetchWithAuth(`/api/v2/vehicles/${id}`, {
         method: 'DELETE'
       })
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
+        
+        // Si toujours 401 après refresh, rediriger vers login
+        if (response.status === 401) {
+          alert('Session expirée. Veuillez vous reconnecter.')
+          window.location.href = '/'
+          return
+        }
+        
         alert(`Erreur lors de la suppression : ${error.error || 'Erreur inconnue'}`)
         return
       }

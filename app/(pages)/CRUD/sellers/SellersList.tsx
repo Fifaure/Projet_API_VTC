@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { fetchWithAuth } from '@/app/lib/fetchWithAuth'
 
 type Seller = {
   id: string
@@ -34,12 +35,19 @@ export default function SellersList({ sellers }: SellersListProps) {
     setDeletingId(id)
 
     try {
-      const response = await fetch(`/api/v1/sellers/${id}`, {
+      const response = await fetchWithAuth(`/api/v2/sellers/${id}`, {
         method: 'DELETE'
       })
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
+        
+        if (response.status === 401) {
+          alert('Session expirée. Veuillez vous reconnecter.')
+          window.location.href = '/'
+          return
+        }
+        
         alert(`Erreur lors de la suppression : ${error.error || 'Erreur inconnue'}`)
         return
       }

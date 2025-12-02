@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { fetchWithAuth } from '@/app/lib/fetchWithAuth'
 
 type Model = {
   id: string
@@ -61,7 +62,7 @@ export default function EditModelForm({ model }: EditModelFormProps) {
     }
 
     try {
-      const response = await fetch(`/api/v1/models/${model.id}`, {
+      const response = await fetchWithAuth(`/api/v2/models/${model.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -73,6 +74,13 @@ export default function EditModelForm({ model }: EditModelFormProps) {
 
       if (!response.ok) {
         console.error('[EditModelForm] API Error:', result)
+        
+        if (response.status === 401) {
+          setError('Session expirée. Veuillez vous reconnecter.')
+          setTimeout(() => window.location.href = '/', 2000)
+          return
+        }
+        
         setError(result.error || `Erreur ${response.status}: Une erreur est survenue lors de la modification`)
         setIsSubmitting(false)
         return

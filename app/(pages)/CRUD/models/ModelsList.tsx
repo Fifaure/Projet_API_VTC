@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { fetchWithAuth } from '@/app/lib/fetchWithAuth'
 
 type Model = {
   id: string
@@ -34,12 +35,19 @@ export default function ModelsList({ models }: ModelsListProps) {
     setDeletingId(id)
 
     try {
-      const response = await fetch(`/api/v1/models/${id}`, {
+      const response = await fetchWithAuth(`/api/v2/models/${id}`, {
         method: 'DELETE'
       })
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Erreur inconnue' }))
+        
+        if (response.status === 401) {
+          alert('Session expirée. Veuillez vous reconnecter.')
+          window.location.href = '/'
+          return
+        }
+        
         alert(`Erreur lors de la suppression : ${error.error || 'Erreur inconnue'}`)
         return
       }

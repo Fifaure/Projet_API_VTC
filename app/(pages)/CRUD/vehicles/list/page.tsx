@@ -1,31 +1,8 @@
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import jwt from 'jsonwebtoken'
-import { getAuthSecret } from '@/app/lib/auth'
+import { getServerSession } from '@/app/lib/serverAuth'
 import { prisma } from '@/app/lib/prisma'
 import Link from 'next/link'
 import VehiclesList from '../VehiclesList'
-
-async function validateAuthorization(): Promise<{ email: string; name?: string | null } | null> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('auth_token')?.value
-  const secret = getAuthSecret()
-
-  if (!token || !secret) {
-    return null
-  }
-
-  try {
-    const payload = jwt.verify(token, secret) as {
-      email: string
-      name?: string | null
-    }
-    return { email: payload.email, name: payload.name }
-  } catch (error) {
-    console.error('[list.validateAuthorization]', error)
-    return null
-  }
-}
 
 async function getVehicles() {
   try {
@@ -37,7 +14,7 @@ async function getVehicles() {
       orderBy: { createdAt: 'desc' }
     })
 
-    return vehicles.map(vehicle => ({
+    return vehicles.map((vehicle: any) => ({
       ...vehicle,
       priceEUR: vehicle.priceEUR ? vehicle.priceEUR.toString() : null
     }))
@@ -48,7 +25,7 @@ async function getVehicles() {
 }
 
 export default async function VehiclesListPage() {
-  const session = await validateAuthorization()
+  const session = await getServerSession()
 
   if (!session) {
     redirect('/')

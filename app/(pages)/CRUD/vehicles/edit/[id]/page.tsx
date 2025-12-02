@@ -1,38 +1,15 @@
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import jwt from 'jsonwebtoken'
-import { getAuthSecret } from '@/app/lib/auth'
+import { getServerSession } from '@/app/lib/serverAuth'
 import { prisma } from '@/app/lib/prisma'
 import Link from 'next/link'
 import EditVehicleForm from '../../EditVehicleForm'
-
-async function validateAuthorization(): Promise<{ email: string; name?: string | null } | null> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get('auth_token')?.value
-  const secret = getAuthSecret()
-
-  if (!token || !secret) {
-    return null
-  }
-
-  try {
-    const payload = jwt.verify(token, secret) as {
-      email: string
-      name?: string | null
-    }
-    return { email: payload.email, name: payload.name }
-  } catch (error) {
-    console.error('[edit.validateAuthorization]', error)
-    return null
-  }
-}
 
 export default async function EditVehiclePage({
   params
 }: {
   params: Promise<{ id: string }>
 }) {
-  const session = await validateAuthorization()
+  const session = await getServerSession()
 
   if (!session) {
     redirect('/')

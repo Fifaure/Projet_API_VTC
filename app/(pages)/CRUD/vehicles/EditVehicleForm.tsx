@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, FormEvent, useEffect } from 'react'
+import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { fetchWithAuth } from '@/app/lib/fetchWithAuth'
 
 type Model = {
   id: string
@@ -107,7 +108,7 @@ export default function EditVehicleForm({ vehicle, models, sellers }: EditVehicl
     }
 
     try {
-      const response = await fetch(`/api/v1/vehicles/${vehicle.id}`, {
+      const response = await fetchWithAuth(`/api/v2/vehicles/${vehicle.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -119,6 +120,13 @@ export default function EditVehicleForm({ vehicle, models, sellers }: EditVehicl
 
       if (!response.ok) {
         console.error('[EditVehicleForm] API Error:', result)
+        
+        if (response.status === 401) {
+          setError('Session expirée. Veuillez vous reconnecter.')
+          setTimeout(() => window.location.href = '/', 2000)
+          return
+        }
+        
         setError(result.error || `Erreur ${response.status}: Une erreur est survenue lors de la modification`)
         setIsSubmitting(false)
         return

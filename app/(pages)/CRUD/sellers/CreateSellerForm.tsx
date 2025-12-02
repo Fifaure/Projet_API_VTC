@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { fetchWithAuth } from '@/app/lib/fetchWithAuth'
 
 export default function CreateSellerForm() {
   const router = useRouter()
@@ -50,7 +51,7 @@ export default function CreateSellerForm() {
     }
 
     try {
-      const response = await fetch('/api/v1/sellers', {
+      const response = await fetchWithAuth('/api/v2/sellers', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -61,6 +62,12 @@ export default function CreateSellerForm() {
       const result = await response.json()
 
       if (!response.ok) {
+        if (response.status === 401) {
+          setError('Session expirée. Veuillez vous reconnecter.')
+          setTimeout(() => window.location.href = '/', 2000)
+          return
+        }
+        
         setError(result.error || 'Une erreur est survenue lors de la création du vendeur')
         setIsSubmitting(false)
         return

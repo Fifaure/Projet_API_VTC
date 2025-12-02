@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { fetchWithAuth } from '@/app/lib/fetchWithAuth'
 
 type Seller = {
   id: string
@@ -61,7 +62,7 @@ export default function EditSellerForm({ seller }: EditSellerFormProps) {
     }
 
     try {
-      const response = await fetch(`/api/v1/sellers/${seller.id}`, {
+      const response = await fetchWithAuth(`/api/v2/sellers/${seller.id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
@@ -73,6 +74,13 @@ export default function EditSellerForm({ seller }: EditSellerFormProps) {
 
       if (!response.ok) {
         console.error('[EditSellerForm] API Error:', result)
+        
+        if (response.status === 401) {
+          setError('Session expirée. Veuillez vous reconnecter.')
+          setTimeout(() => window.location.href = '/', 2000)
+          return
+        }
+        
         setError(result.error || `Erreur ${response.status}: Une erreur est survenue lors de la modification`)
         setIsSubmitting(false)
         return
