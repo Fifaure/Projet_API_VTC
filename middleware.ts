@@ -4,8 +4,6 @@ import type { NextRequest } from 'next/server'
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute
 const RATE_LIMIT_MAX = 20; // 20 requests per window
 
-// Note: In a serverless environment (like Vercel), this map will be reset
-// when the function is cold-started. For production, use Redis.
 const ipRequests = new Map<string, { count: number; startTime: number }>();
 
 export function middleware(request: NextRequest) {

@@ -122,7 +122,7 @@ enum Role {
 // 3. Implémenter la route profil
 ```
 
-### 2. Rate Limiting (CRITIQUE)
+### 2. Rate Limiting (CRITIQUE) ✅ FAIT
 
 | Critère manquant  | Priorité | Description                             |
 | ----------------- | -------- | --------------------------------------- |
@@ -206,7 +206,7 @@ enum Role {
 
 5. **Implémenter `/api/v2/profil`**
 
-6. **Ajouter le rate limiting**
+6. **Ajouter le rate limiting** ✅ FAIT
 
 7. **Créer la documentation Swagger**
 
