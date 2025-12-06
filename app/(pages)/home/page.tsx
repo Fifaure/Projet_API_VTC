@@ -12,10 +12,7 @@ export default async function HomePage({
   const isAuthenticated = !!session
 
   const params = await Promise.resolve(searchParams)
-  // Si non connecté, forcer le mode models
-  const currentMode = !isAuthenticated
-    ? 'models'
-    : (params.mode || 'vehicles') as 'vehicles' | 'models' | 'sellers' | 'users'
+  const currentMode = (params.mode || 'vehicles') as 'vehicles' | 'models' | 'sellers' | 'users'
   const isAdmin = session?.role === 'ADMIN'
 
   console.log('[DEBUG] session.role:', session?.role, '| isAdmin:', isAdmin, '| isAuthenticated:', isAuthenticated)
@@ -44,7 +41,7 @@ export default async function HomePage({
           </p>
         </div>
 
-        <Navbar isAdmin={isAdmin} isAuthenticated={isAuthenticated} />
+        <Navbar isAdmin={isAdmin} />
 
         <CRUDActions mode={currentMode} isAdmin={isAdmin} isAuthenticated={isAuthenticated} />
       </div>

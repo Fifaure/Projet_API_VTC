@@ -8,7 +8,7 @@ type Mode = 'vehicles' | 'models' | 'sellers' | 'users'
 
 type NavbarProps = {
   isAdmin?: boolean
-  isAuthenticated?: boolean
+  currentMode?: Mode
 }
 
 type ModeConfig = { id: Mode; label: string; icon: ReactNode; adminOnly?: boolean }
@@ -54,16 +54,14 @@ const allModes: ModeConfig[] = [
   }
 ]
 
-export default function Navbar({ isAdmin = false, isAuthenticated = true }: NavbarProps) {
+export default function Navbar({ isAdmin = false, currentMode: propMode }: NavbarProps) {
   const searchParams = useSearchParams()
-  const currentMode = (searchParams.get('mode') as Mode) || 'vehicles'
+  const currentMode = propMode || (searchParams.get('mode') as Mode) || 'vehicles'
 
-  // Si non connecté, afficher uniquement l'onglet Modèles
-  const modes = !isAuthenticated
-    ? allModes.filter(m => m.id === 'models')
-    : isAdmin
-      ? allModes
-      : allModes.filter(m => !m.adminOnly)
+  // Filtrer les onglets admin si non admin
+  const modes = isAdmin
+    ? allModes
+    : allModes.filter(m => !m.adminOnly)
 
   return (
     <nav className="bg-white rounded-xl shadow-md border border-slate-200 mb-6">
