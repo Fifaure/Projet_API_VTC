@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { ReactNode } from 'react'
+import GrokChat from './GrokChat'
 
 type Mode = 'vehicles' | 'models' | 'sellers' | 'users'
 
@@ -66,29 +67,34 @@ export default function Navbar({ isAdmin = false, currentMode: propMode }: Navba
   return (
     <nav className="bg-white rounded-xl shadow-md border border-slate-200 mb-6">
       <div className="px-6 py-4">
-        <div className="flex items-center gap-2">
-          {modes.map((mode) => {
-            const isActive = currentMode === mode.id
-            const isAdminTab = mode.adminOnly
-            return (
-              <Link
-                key={mode.id}
-                href={`/home?mode=${mode.id}`}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  isActive
-                    ? isAdminTab
-                      ? 'bg-purple-600 text-white shadow-md'
-                      : 'bg-blue-600 text-white shadow-md'
-                    : isAdminTab
-                      ? 'text-purple-600 hover:bg-purple-50 hover:text-purple-700'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                }`}
-              >
-                {mode.icon}
-                <span>{mode.label}</span>
-              </Link>
-            )
-          })}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {modes.map((mode) => {
+              const isActive = currentMode === mode.id
+              const isAdminTab = mode.adminOnly
+              return (
+                <Link
+                  key={mode.id}
+                  href={`/home?mode=${mode.id}`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    isActive
+                      ? isAdminTab
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-blue-600 text-white shadow-md'
+                      : isAdminTab
+                        ? 'text-purple-600 hover:bg-purple-50 hover:text-purple-700'
+                        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  {mode.icon}
+                  <span>{mode.label}</span>
+                </Link>
+              )
+            })}
+          </div>
+          
+          {/* Bouton Chat Grok AI */}
+          <GrokChat />
         </div>
       </div>
     </nav>
