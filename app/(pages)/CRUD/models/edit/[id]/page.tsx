@@ -17,12 +17,21 @@ export default async function EditModelPage({
 
   const { id } = await params
 
-  const model = await prisma.model.findUnique({
+  const modelData = await prisma.model.findUnique({
     where: { id }
   })
 
-  if (!model) {
+  if (!modelData) {
     redirect('/CRUD/models/list')
+  }
+
+  // Sérialiser pour le composant client (exclure les dates)
+  const model = {
+    id: modelData.id,
+    name: modelData.name,
+    brand: modelData.brand,
+    yearStart: modelData.yearStart,
+    yearEnd: modelData.yearEnd
   }
 
   return (

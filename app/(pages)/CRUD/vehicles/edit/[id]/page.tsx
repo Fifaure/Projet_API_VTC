@@ -41,11 +41,45 @@ export default async function EditVehiclePage({
     redirect('/CRUD/vehicles/list')
   }
 
-  // Convertir le Decimal en string pour la sérialisation
+  // Sérialiser pour le composant client
   const serializedVehicle = {
-    ...vehicle,
-    priceEUR: vehicle.priceEUR ? vehicle.priceEUR.toString() : null
+    id: vehicle.id,
+    modelId: vehicle.modelId,
+    sellerId: vehicle.sellerId,
+    mileageKm: vehicle.mileageKm,
+    priceEUR: vehicle.priceEUR ? vehicle.priceEUR.toString() : null,
+    color: vehicle.color,
+    notes: vehicle.notes,
+    model: {
+      id: vehicle.model.id,
+      name: vehicle.model.name,
+      brand: vehicle.model.brand,
+      yearStart: vehicle.model.yearStart,
+      yearEnd: vehicle.model.yearEnd
+    },
+    seller: vehicle.seller ? {
+      id: vehicle.seller.id,
+      name: vehicle.seller.name,
+      email: vehicle.seller.email,
+      phone: vehicle.seller.phone
+    } : null
   }
+
+  // Sérialiser models et sellers (exclure les dates)
+  const serializedModels = models.map(m => ({
+    id: m.id,
+    name: m.name,
+    brand: m.brand,
+    yearStart: m.yearStart,
+    yearEnd: m.yearEnd
+  }))
+
+  const serializedSellers = sellers.map(s => ({
+    id: s.id,
+    name: s.name,
+    email: s.email,
+    phone: s.phone
+  }))
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-100 p-6">
@@ -67,7 +101,7 @@ export default async function EditVehiclePage({
             </Link>
           </div>
         </div>
-        <EditVehicleForm vehicle={serializedVehicle} models={models} sellers={sellers} />
+        <EditVehicleForm vehicle={serializedVehicle} models={serializedModels} sellers={serializedSellers} />
       </section>
     </main>
   )

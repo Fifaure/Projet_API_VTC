@@ -21,12 +21,21 @@ export default async function EditSellerPage({
 
   const { id } = await params
 
-  const seller = await prisma.seller.findUnique({
+  const sellerData = await prisma.seller.findUnique({
     where: { id }
   })
 
-  if (!seller) {
+  if (!sellerData) {
     redirect('/CRUD/sellers/list')
+  }
+
+  // Sérialiser pour le composant client (exclure les dates)
+  const seller = {
+    id: sellerData.id,
+    name: sellerData.name,
+    email: sellerData.email,
+    phone: sellerData.phone,
+    website: sellerData.website
   }
 
   return (

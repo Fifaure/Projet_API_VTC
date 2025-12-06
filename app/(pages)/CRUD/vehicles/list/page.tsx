@@ -14,9 +14,22 @@ async function getVehicles() {
       orderBy: { createdAt: 'desc' }
     })
 
-    return vehicles.map((vehicle: any) => ({
+    // Sérialiser les dates et Decimal pour le composant client
+    return vehicles.map((vehicle) => ({
       ...vehicle,
-      priceEUR: vehicle.priceEUR ? vehicle.priceEUR.toString() : null
+      priceEUR: vehicle.priceEUR ? vehicle.priceEUR.toString() : null,
+      createdAt: vehicle.createdAt.toISOString(),
+      updatedAt: vehicle.updatedAt.toISOString(),
+      model: {
+        ...vehicle.model,
+        createdAt: vehicle.model.createdAt.toISOString(),
+        updatedAt: vehicle.model.updatedAt.toISOString()
+      },
+      seller: vehicle.seller ? {
+        ...vehicle.seller,
+        createdAt: vehicle.seller.createdAt.toISOString(),
+        updatedAt: vehicle.seller.updatedAt.toISOString()
+      } : null
     }))
   } catch (error) {
     console.error('[getVehicles]', error)

@@ -9,7 +9,12 @@ async function getSellers() {
     const sellers = await prisma.seller.findMany({
       orderBy: { createdAt: 'desc' }
     })
-    return sellers
+    // Sérialiser les dates pour le composant client
+    return sellers.map(seller => ({
+      ...seller,
+      createdAt: seller.createdAt.toISOString(),
+      updatedAt: seller.updatedAt.toISOString()
+    }))
   } catch (error) {
     console.error('[getSellers]', error)
     return []
