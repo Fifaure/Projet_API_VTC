@@ -8,6 +8,7 @@ type Mode = 'vehicles' | 'models' | 'sellers' | 'users'
 type CRUDActionsProps = {
   mode: Mode
   isAdmin?: boolean
+  isAuthenticated?: boolean
 }
 
 type ActionConfig = {
@@ -152,7 +153,7 @@ const crudConfig: Record<Mode, ModeConfig> = {
   }
 }
 
-export default function CRUDActions({ mode, isAdmin = false }: CRUDActionsProps) {
+export default function CRUDActions({ mode, isAdmin = false, isAuthenticated = true }: CRUDActionsProps) {
   if ((mode === 'users' || mode === 'sellers') && !isAdmin) {
     return (
       <div className="text-center py-12">
@@ -163,11 +164,18 @@ export default function CRUDActions({ mode, isAdmin = false }: CRUDActionsProps)
 
   const config = crudConfig[mode]
 
+  // Si non connecté et mode models, n'afficher que l'action "Gérer les modèles"
+  const actions = !isAuthenticated && mode === 'models'
+    ? config.actions.filter(action => action.href.includes('/list'))
+    : config.actions
+
   return (
     <div>
-      <h2 className="text-2xl font-semibold text-slate-800 mb-6">{config.title}</h2>
+      <h2 className="text-2xl font-semibold text-slate-800 mb-6">
+        {!isAuthenticated ? 'Consulter les modèles' : config.title}
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {config.actions.map((action, index) => (
+        {actions.map((action, index) => (
           <Link
             key={index}
             href={action.href}
